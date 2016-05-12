@@ -3,6 +3,9 @@ const log = process.env.NODE_ENV === 'development'
 
 class Router {
   constructor (rtm, routes) {
+    this.rtm = rtm
+
+    // Initiate all routes and connect them to `rtm`
     this.routes = Object.keys(routes).reduce((compiledRoutes, key) => {
       compiledRoutes[key] = new routes[key](rtm)
       return compiledRoutes
