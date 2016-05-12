@@ -56,7 +56,7 @@ function getLocation (args, data) {
   return Location.get(user.id).then((res) => {
     let msg
     if (res) {
-      msg = `as far as I know, ${args} is in ${res.location}`
+      msg = `as far as I know, ${args} is in ${res.location}  --  ${mapURL(res.location)}`
     } else {
       msg = `I haven't been told where ${args} is.`
     }
@@ -83,6 +83,23 @@ function getAllLocations (args, data) {
       })
     })
   })
+}
+
+function mapURL (location, opts = {}) {
+  opts = Object.assign({
+    center: location,
+    zoom: 5,
+    size: '500x300',
+    maptype: 'roadmap',
+    key: process.env.GOOGLE_API_KEY
+  }, opts)
+
+  const queryStr = Object.keys(opts).reduce((arr, key) => {
+    arr.push(`${key}=${encodeURIComponent(opts[key])}`)
+    return arr
+  }, []).join('&')
+
+  return `https://maps.googleapis.com/maps/api/staticmap?${queryStr}`
 }
 
 module.exports = CheckinController
