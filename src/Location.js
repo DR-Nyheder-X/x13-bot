@@ -16,6 +16,14 @@ class Location {
                  LIMIT 1
                  `).then((res) => res.rows[0])
   }
+
+  static all () {
+    return query(`
+                 SELECT DISTINCT ON (user_id) *
+                 FROM checkins
+                 ORDER BY user_id, id DESC
+                 `).then((res) => res.rows)
+  }
 }
 
 module.exports = Location

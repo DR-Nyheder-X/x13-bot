@@ -1,3 +1,5 @@
+/* global describe, it, expect, beforeEach */
+
 const CheckinController = require('../src/CheckinController')
 const Location = require('../src/Location')
 const { query } = require('../src/DB')
@@ -21,6 +23,22 @@ describe('CheckinController', function () {
       sent = []
       ctrl = new CheckinController(rtm(sent))
       query('TRUNCATE checkins').then(() => { done() })
+    })
+
+    describe('with no arguments', function () {
+      it('returns locations of all users', function (done) {
+        Promise.all([
+          Location.set('u1', 'Paris'),
+          Location.set('u666', 'Berlin')
+        ]).then(() => {
+          ctrl.call('', { channel: 'c1' }).then(() => {
+            expect(last(sent)[0]).to.match(/<@u1>.*Paris/)
+            expect(last(sent)[0]).to.match(/<@u666>.*Berlin/)
+
+            done()
+          })
+        })
+      })
     })
 
     describe('with a location argument', function () {

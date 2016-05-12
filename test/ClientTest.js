@@ -1,3 +1,5 @@
+/* global describe, it, expect */
+
 const { handleMessage } = require('../src/Client')
 
 describe('Client', function () {

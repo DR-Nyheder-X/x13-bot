@@ -12,7 +12,7 @@ class CheckinController extends Controller {
     args = args.trim()
 
     if (args === '') {
-      console.log('EMPTY')
+      return getAllLocations.bind(this)(args, data)
     } else if (args.match(/<@(.*)>$/)) {
       return getLocation.bind(this)(args, data)
     } else {
@@ -37,7 +37,7 @@ function setLocation (args, data) {
     id = first(args).match(/<@(.*)>/)[1]
     user = this.rtm.dataStore.getUserById(id)
     location = last(args)
-    msg = `OK, ${user.name} is now in _${location}`
+    msg = `OK, _${user.name}_ is now in _${location}`
   }
 
   return Location.set(id, location).then((res) => {
@@ -61,6 +61,21 @@ function getLocation (args, data) {
     } else {
       msg = `I haven't been told where ${args} is.`
     }
+
+    return new Promise((resolve, reject) => {
+      this.rtm.sendMessage(msg, data.channel, (err) => {
+        if (err) { return reject(err) }
+        resolve()
+      })
+    })
+  })
+}
+
+function getAllLocations (args, data) {
+  return Location.all().then((res) => {
+    const msg = res.map((checkin) => {
+      return `<@${checkin.user_id}> is in ${checkin.location}`
+    }).join('\n')
 
     return new Promise((resolve, reject) => {
       this.rtm.sendMessage(msg, data.channel, (err) => {

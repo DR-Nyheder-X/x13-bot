@@ -1,3 +1,5 @@
+/* global describe, it, expect */
+
 const Router = require('../src/Router')
 const Controller = require('../src/Controller')
 
