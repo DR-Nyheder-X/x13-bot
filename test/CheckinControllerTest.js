@@ -25,6 +25,15 @@ describe('CheckinController', function () {
       query('TRUNCATE checkins').then(() => { done() })
     })
 
+    describe('help', function () {
+      it('returns help text', function (done) {
+        ctrl.call('help', { channel: 'c1' }).then(() => {
+          expect(last(sent)[0]).to.eq(CheckinController.helpText)
+          done()
+        })
+      })
+    })
+
     describe('with no arguments', function () {
       it('returns locations of all users', function (done) {
         Promise.all([

@@ -13,6 +13,13 @@ class CheckinController extends Controller {
 
     if (args === '') {
       return getAllLocations.bind(this)(args, data)
+    } else if (args === 'help') {
+      return new Promise((resolve, reject) => {
+        this.rtm.sendMessage(CheckinController.helpText, data.channel, (err) => {
+          if (err) { return reject(err) }
+          resolve()
+        })
+      })
     } else if (args.match(/<@(.*)>$/)) {
       return getLocation.bind(this)(args, data)
     } else {
@@ -20,6 +27,11 @@ class CheckinController extends Controller {
     }
   }
 }
+
+CheckinController.helpText = 'Usage:\n' +
+  '`bobo checkin` => all known locations\n' +
+  '`bobo checkin Berlin` => check yourself into Berlin\n' +
+  '`bobo checkin @handle Moscow` => check @user into Moscow'
 
 function setLocation (args, data) {
   let id, location, msg, user
