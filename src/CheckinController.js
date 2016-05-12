@@ -3,7 +3,7 @@ const log = process.env.NODE_ENV === 'development'
 
 const Controller = require('./Controller')
 const Location = require('./Location')
-const { first, last } = require('lodash')
+const { first, drop } = require('lodash')
 
 class CheckinController extends Controller {
   call (args, data) {
@@ -36,7 +36,7 @@ function setLocation (args, data) {
     // Several args means set for other guy
     id = first(args).match(/<@(.*)>/)[1]
     user = this.rtm.dataStore.getUserById(id)
-    location = last(args)
+    location = drop(args).join(' ')
     msg = `OK, _${user.name}_ is now in _${location}`
   }
 
