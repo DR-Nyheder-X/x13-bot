@@ -13,7 +13,12 @@ class Router {
     let [ action, ...rest ] = cmd.split(' ')
     rest = rest.join(' ')
     log(JSON.stringify(action))
-    this.routes[action].call(rest, data)
+
+    if (this.routes[action]) {
+      this.routes[action].call(rest, data)
+    } else {
+      this.rtm.sendMessage(`I don\'t know how to _${action}_`, data.channel, log)
+    }
   }
 }
 
