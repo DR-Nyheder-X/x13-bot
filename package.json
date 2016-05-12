@@ -1,12 +1,16 @@
 {
   "private": true,
   "scripts": {
-    "start": "nodemon src/index.js"
+    "dev": "DEBUG=dr:* nodemon src/index.js -w src"
   },
   "dependencies": {
     "@slack/client": "^3.1.0"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "debug": "^2.2.0",
+    "dotenv": "^2.0.0",
+    "mocha": "^2.4.5",
     "nodemon": "^1.9.2"
   }
 }

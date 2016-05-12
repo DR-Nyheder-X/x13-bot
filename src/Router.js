@@ -1,12 +1,20 @@
-function Router (routes) {
-  this.routes = routes
-}
+const log = process.env.NODE_ENV === 'development'
+  ? require('debug')('dr:router') : () => {}
 
-Router.prototype.dispatch = function dispatch (cmd) {
-  console.log(`DISPATCH:${cmd}`)
-  const [ action, ...rest ] = cmd.split(' ')
-  console.log({action, rest})
-  // this.routes[cmd](args)
+class Router {
+  constructor (rtm, routes) {
+    this.routes = Object.keys(routes).reduce((compiledRoutes, key) => {
+      compiledRoutes[key] = new routes[key](rtm)
+      return compiledRoutes
+    }, {})
+  }
+
+  dispatch (cmd, data) {
+    let [ action, ...rest ] = cmd.split(' ')
+    rest = rest.join(' ')
+    log(JSON.stringify(action))
+    this.routes[action].call(rest, data)
+  }
 }
 
 module.exports = Router
