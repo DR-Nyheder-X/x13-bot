@@ -22,22 +22,21 @@ class CheckinController extends Controller {
 }
 
 function setLocation (args, data) {
-  args = args.split(' ')
-
   let id, location, msg, user
+  const userMatch = args.match(/^<@(.*)>/)
 
-  if (args.length === 1) {
-    // One arg means set for me
+  if (userMatch) {
+    // First arg is user
+    id = userMatch[1]
+    user = this.rtm.dataStore.getUserById(id)
+    location = drop(args.split(' ')).join(' ')
+    msg = `OK, _${user.name}_ is now in _${location}`
+  } else {
+    // No user means me
     user = this.rtm.dataStore.getUserById(data.user)
     id = user.id
-    location = args[0]
+    location = args
     msg = `ok _${user.name}_ you are in _${location}_`
-  } else {
-    // Several args means set for other guy
-    id = first(args).match(/<@(.*)>/)[1]
-    user = this.rtm.dataStore.getUserById(id)
-    location = drop(args).join(' ')
-    msg = `OK, _${user.name}_ is now in _${location}`
   }
 
   return Location.set(id, location).then((res) => {

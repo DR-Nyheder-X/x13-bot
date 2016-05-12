@@ -43,11 +43,11 @@ describe('CheckinController', function () {
 
     describe('with a location argument', function () {
       it('saves loc and responds', function (done) {
-        ctrl.call('Berlin', { user: 'u1', channel: 'c1' }).then(() => {
-          expect(last(sent)[0]).to.eq('ok _NAME_ you are in _Berlin_')
+        ctrl.call('Berlin, Germany', { user: 'u1', channel: 'c1' }).then(() => {
+          expect(last(sent)[0]).to.eq('ok _NAME_ you are in _Berlin, Germany_')
 
           Location.get('u1').then((res) => {
-            expect(res.location).to.eq('Berlin')
+            expect(res.location).to.eq('Berlin, Germany')
 
             done()
           })
