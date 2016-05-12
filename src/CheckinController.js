@@ -3,7 +3,7 @@ const log = process.env.NODE_ENV === 'development'
 
 const Controller = require('./Controller')
 const Location = require('./Location')
-const { first, drop } = require('lodash')
+const { drop } = require('lodash')
 
 class CheckinController extends Controller {
   call (args, data) {
@@ -30,13 +30,13 @@ function setLocation (args, data) {
     id = userMatch[1]
     user = this.rtm.dataStore.getUserById(id)
     location = drop(args.split(' ')).join(' ')
-    msg = `OK, _${user.name}_ is now in _${location}`
+    msg = `OK, _@${user.name}_ is now in _${location}_`
   } else {
     // No user means me
     user = this.rtm.dataStore.getUserById(data.user)
     id = user.id
     location = args
-    msg = `ok _${user.name}_ you are in _${location}_`
+    msg = `ok _@${user.name}_ you are in _${location}_`
   }
 
   return Location.set(id, location).then((res) => {
