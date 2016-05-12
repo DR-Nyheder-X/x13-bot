@@ -30,7 +30,7 @@ function start (token, handle) {
 
 function handleMessage (router, handle, data) {
   const { type, text } = data
-  const match = text && text.match(new RegExp(`^${handle}(.*)`))
+  const match = text && text.match(new RegExp(`^@?${handle}(.*)`))
 
   if (match) { log('msg', data) }
 

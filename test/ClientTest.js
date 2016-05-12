@@ -11,15 +11,13 @@ describe('Client', function () {
         dispatch: (...args) => { calls.push(args) }
       }
 
-      const msg = {
-        type: 'message',
-        text: 'herndle args'
-      }
+      handleMessage.bind(null, router, 'herndle')({ type: 'message', text: 'herndle args1' })
+      handleMessage.bind(null, router, 'herndle')({ type: 'message', text: '@herndle args2' })
 
-      handleMessage.bind(null, router, 'herndle')(msg)
+      expect(calls.length).to.eq(2)
 
-      expect(calls[0][0]).to.eq('args')
-      expect(calls[0][1]).to.eq(msg)
+      expect(calls[0][1].text).to.eq('herndle args1')
+      expect(calls[1][1].text).to.eq('@herndle args2')
     })
   })
 })
