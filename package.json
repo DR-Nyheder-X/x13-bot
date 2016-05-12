@@ -2,6 +2,7 @@
   "private": true,
   "scripts": {
     "start": "forever src/index.js",
+    "test": "NODE_ENV=test bin/test test",
     "dev": "DEBUG=dr:* nodemon src/index.js -w src"
   },
   "engines": {

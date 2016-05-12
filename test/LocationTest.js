@@ -15,13 +15,12 @@ describe('Location', function () {
         })
       })
     })
+  })
 
-    describe('.get', function () {
-      it("gets latest known location", function (done) {
-        Promise.all([
-          Location.set('u1', 'Moscow'),
-          Location.set('u1', 'Berlin')
-        ]).then((results) => {
+  describe('.get', function () {
+    it("gets latest known location", function (done) {
+      Location.set('u1', 'Moscow').then(() => {
+        Location.set('u1', 'Berlin').then(() => {
           Location.get('u1').then((res) => {
             expect(res.location).to.eq('Berlin')
 

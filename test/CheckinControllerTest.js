@@ -5,8 +5,7 @@ const { last } = require('lodash')
 
 const rtm = (sent) => ({
   dataStore: {
-    getUserById: () => ({ name: 'NAME' }),
-    getUserByName: () => ({ id: 'u1' })
+    getUserById: (id) => ({ id: id, name: 'NAME' })
   },
   sendMessage: (...args) => {
     sent.push(args)
@@ -39,12 +38,18 @@ describe('CheckinController', function () {
     })
 
     describe('with a user argument', function () {
-      beforeEach(function (done) {
-        Location.set('u1', 'Sao Paolo').then(() => { done() })
+      it('gets location when there is one', function (done) {
+        Location.set('u1', 'Sao Paolo').then(() => {
+          ctrl.call('<@u1>', { channel: 'c1' }).then(() => {
+            expect(last(sent)[0]).to.match(/<@u1>.*Sao Paolo/)
+
+            done()
+          })
+        })
       })
-      it('gets location', function (done) {
+      it('says it doesn\'t know it', function (done) {
         ctrl.call('<@u1>', { channel: 'c1' }).then(() => {
-          expect(last(sent)[0]).to.eq('as far as I know, @mikker is in Sao Paolo')
+          expect(last(sent)[0]).to.match(/haven't been told/)
 
           done()
         })

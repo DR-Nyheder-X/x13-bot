@@ -36,9 +36,14 @@ function getLocation (args, data) {
   const user = this.rtm.dataStore.getUserById(id)
 
   return Location.get(user.id).then((res) => {
-    return new Promise((resolve, reject) => {
-      const msg = `as far as I know, ${args} is in ${res.location}`
+    let msg
+    if (res) {
+      msg = `as far as I know, ${args} is in ${res.location}`
+    } else {
+      msg = `I haven't been told where ${args} is.`
+    }
 
+    return new Promise((resolve, reject) => {
       this.rtm.sendMessage(msg, data.channel, (err) => {
         if (err) { return reject(err) }
         resolve()

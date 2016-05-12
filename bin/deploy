@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+npm test
+git push dokku master
