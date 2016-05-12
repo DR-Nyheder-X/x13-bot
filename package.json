@@ -4,7 +4,11 @@
     "dev": "DEBUG=dr:* nodemon src/index.js -w src"
   },
   "dependencies": {
-    "@slack/client": "^3.1.0"
+    "@slack/client": "^3.1.0",
+    "bluebird": "^3.3.5",
+    "invariant": "^2.2.1",
+    "lodash": "^4.12.0",
+    "pg": "^4.5.5"
   },
   "devDependencies": {
     "chai": "^3.5.0",

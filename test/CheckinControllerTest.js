@@ -1,26 +1,54 @@
 const CheckinController = require('../src/CheckinController')
+const Location = require('../src/Location')
+const { query } = require('../src/DB')
+const { last } = require('lodash')
+
 const rtm = (sent) => ({
   dataStore: {
-    getUserById: () => ({ name: 'NAME' })
+    getUserById: () => ({ name: 'NAME' }),
+    getUserByName: () => ({ id: 'u1' })
   },
   sendMessage: (...args) => {
     sent.push(args)
+    const lastArg = args[args.length - 1]
+    if (typeof lastArg === 'function') { lastArg() }
   }
 })
 
 describe('CheckinController', function () {
   describe('call', function () {
     let ctrl, sent
-    beforeEach(() => {
+    beforeEach(function (done) {
       sent = []
       ctrl = new CheckinController(rtm(sent))
+      query('TRUNCATE checkins').then(() => { done() })
     })
-    it('responds', function () {
-      ctrl.call('BERLIN', { user: 'u1', channel: 'c1' })
-      expect(sent[0][0]).to.eq('ok _NAME_ you are in _BERLIN_')
+
+    describe('with a location argument', function () {
+      it('saves loc and responds', function (done) {
+        ctrl.call('Berlin', { user: 'u1', channel: 'c1' }).then(() => {
+          expect(last(sent)[0]).to.eq('ok _NAME_ you are in _Berlin_')
+
+          Location.get('u1').then((res) => {
+            expect(res.location).to.eq('Berlin')
+
+            done()
+          })
+        })
+      })
     })
-    it('saves loc', function () {
-      ctrl.call('BERLIN', { user: 'u1', channel: 'c1' })
+
+    describe('with a user argument', function () {
+      beforeEach(function (done) {
+        Location.set('u1', 'Sao Paolo').then(() => { done() })
+      })
+      it('gets location', function (done) {
+        ctrl.call('<@u1>', { channel: 'c1' }).then(() => {
+          expect(last(sent)[0]).to.eq('as far as I know, @mikker is in Sao Paolo')
+
+          done()
+        })
+      })
     })
   })
 })
