@@ -3,13 +3,17 @@ const log = process.env.NODE_ENV === 'development'
 
 const Controller = require('./Controller')
 const Location = require('./Location')
+const { first, last } = require('lodash')
 
 class CheckinController extends Controller {
   call (args, data) {
     log(args)
+
+    args = args.trim()
+
     if (args === '') {
       console.log('EMPTY')
-    } else if (args.match(/<@(.*)>/)) {
+    } else if (args.match(/<@(.*)>$/)) {
       return getLocation.bind(this)(args, data)
     } else {
       return setLocation.bind(this)(args, data)
@@ -18,11 +22,26 @@ class CheckinController extends Controller {
 }
 
 function setLocation (args, data) {
-  const user = this.rtm.dataStore.getUserById(data.user)
+  args = args.split(' ')
 
-  return Location.set(data.user, args).then((res) => {
+  let id, location, msg, user
+
+  if (args.length === 1) {
+    // One arg means set for me
+    user = this.rtm.dataStore.getUserById(data.user)
+    id = user.id
+    location = args[0]
+    msg = `ok _${user.name}_ you are in _${location}_`
+  } else {
+    // Several args means set for other guy
+    id = first(args).match(/<@(.*)>/)[1]
+    user = this.rtm.dataStore.getUserById(id)
+    location = last(args)
+    msg = `OK, ${user.name} is now in _${location}`
+  }
+
+  return Location.set(id, location).then((res) => {
     return new Promise((resolve, reject) => {
-      const msg = `ok _${user.name}_ you are in _${args}_`
       this.rtm.sendMessage(msg, data.channel, (err) => {
         if (err) { return reject(err) }
         resolve()

@@ -55,5 +55,16 @@ describe('CheckinController', function () {
         })
       })
     })
+
+    describe('with a user and a location', function () {
+      it('sets location for user', function (done) {
+        ctrl.call('<@u666> Herning', { channel: 'c1' }).then(() => {
+          Location.get('u666').then((res) => {
+            expect(res.location).to.eq('Herning')
+            done()
+          })
+        })
+      })
+    })
   })
 })
