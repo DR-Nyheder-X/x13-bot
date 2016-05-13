@@ -6,6 +6,15 @@ const Location = require('./Location')
 const { drop } = require('lodash')
 
 class CheckinController extends Controller {
+  constructor (...args) {
+    super(...args)
+
+    this.helpText = '' +
+      '`bobo checkin` => all known locations\n' +
+      '`bobo checkin Berlin` => check yourself into Berlin\n' +
+      '`bobo checkin @handle Moscow` => check @user into Moscow'
+  }
+
   call (args, data) {
     log(args)
 
@@ -15,7 +24,7 @@ class CheckinController extends Controller {
       return getAllLocations.bind(this)(args, data)
     } else if (args === 'help') {
       return new Promise((resolve, reject) => {
-        this.rtm.sendMessage(CheckinController.helpText, data.channel, (err) => {
+        this.rtm.sendMessage(this.helpText, data.channel, (err) => {
           if (err) { return reject(err) }
           resolve()
         })
@@ -27,11 +36,6 @@ class CheckinController extends Controller {
     }
   }
 }
-
-CheckinController.helpText = 'Usage:\n' +
-  '`bobo checkin` => all known locations\n' +
-  '`bobo checkin Berlin` => check yourself into Berlin\n' +
-  '`bobo checkin @handle Moscow` => check @user into Moscow'
 
 function setLocation (args, data) {
   let id, location, msg, user

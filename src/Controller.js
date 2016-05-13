@@ -1,6 +1,7 @@
 class Controller {
-  constructor (rtm) {
+  constructor (rtm, router) {
     this.rtm = rtm
+    this.router = router
   }
 }
 

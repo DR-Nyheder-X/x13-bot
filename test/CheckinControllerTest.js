@@ -1,34 +1,22 @@
-/* global describe, it, expect, beforeEach */
+/* global describe, it, expect, beforeEach, rtm */
 
 const CheckinController = require('../src/CheckinController')
 const Location = require('../src/Location')
 const { query } = require('../src/DB')
 const { last } = require('lodash')
 
-const rtm = (sent) => ({
-  dataStore: {
-    getUserById: (id) => ({ id: id, name: 'NAME' })
-  },
-  sendMessage: (...args) => {
-    sent.push(args)
-    const lastArg = args[args.length - 1]
-    if (typeof lastArg === 'function') { lastArg() }
-  }
-})
-
 describe('CheckinController', function () {
   describe('call', function () {
-    let ctrl, sent
+    let ctrl
     beforeEach(function (done) {
-      sent = []
-      ctrl = new CheckinController(rtm(sent))
+      ctrl = new CheckinController(rtm)
       query('TRUNCATE checkins').then(() => { done() })
     })
 
     describe('help', function () {
       it('returns help text', function (done) {
         ctrl.call('help', { channel: 'c1' }).then(() => {
-          expect(last(sent)[0]).to.eq(CheckinController.helpText)
+          expect(last(rtm.sent)[0]).to.eq(new CheckinController().helpText)
           done()
         })
       })
@@ -41,8 +29,8 @@ describe('CheckinController', function () {
           Location.set('u666', 'Berlin')
         ]).then(() => {
           ctrl.call('', { channel: 'c1' }).then(() => {
-            expect(last(sent)[0]).to.match(/<@u1>.*Paris/)
-            expect(last(sent)[0]).to.match(/<@u666>.*Berlin/)
+            expect(last(rtm.sent)[0]).to.match(/<@u1>.*Paris/)
+            expect(last(rtm.sent)[0]).to.match(/<@u666>.*Berlin/)
 
             done()
           })
@@ -53,7 +41,7 @@ describe('CheckinController', function () {
     describe('with a location argument', function () {
       it('saves loc and responds', function (done) {
         ctrl.call('Berlin, Germany', { user: 'u1', channel: 'c1' }).then(() => {
-          expect(last(sent)[0]).to.eq('ok _@NAME_ you are in _Berlin, Germany_')
+          expect(last(rtm.sent)[0]).to.eq('ok _@NAME_ you are in _Berlin, Germany_')
 
           Location.get('u1').then((res) => {
             expect(res.location).to.eq('Berlin, Germany')
@@ -68,7 +56,7 @@ describe('CheckinController', function () {
       it('gets location when there is one', function (done) {
         Location.set('u1', 'Sao Paolo').then(() => {
           ctrl.call('<@u1>', { channel: 'c1' }).then(() => {
-            expect(last(sent)[0]).to.match(/<@u1>.*Sao Paolo/)
+            expect(last(rtm.sent)[0]).to.match(/<@u1>.*Sao Paolo/)
 
             done()
           })
@@ -76,7 +64,7 @@ describe('CheckinController', function () {
       })
       it('says it doesn\'t know it', function (done) {
         ctrl.call('<@u1>', { channel: 'c1' }).then(() => {
-          expect(last(sent)[0]).to.match(/haven't been told/)
+          expect(last(rtm.sent)[0]).to.match(/haven't been told/)
 
           done()
         })

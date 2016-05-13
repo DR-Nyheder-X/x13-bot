@@ -7,7 +7,7 @@ class Router {
 
     // Initiate all routes and connect them to `rtm`
     this.routes = Object.keys(routes).reduce((compiledRoutes, key) => {
-      compiledRoutes[key] = new routes[key](rtm)
+      compiledRoutes[key] = new routes[key](rtm, this)
       return compiledRoutes
     }, {})
   }

@@ -8,7 +8,8 @@ const {
 const Router = require('./Router')
 
 const routes = {
-  checkin: require('./CheckinController')
+  checkin: require('./CheckinController'),
+  help: require('./HelpController')
 }
 
 function start (token, handle) {
