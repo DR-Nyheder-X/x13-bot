@@ -17,10 +17,13 @@ class Router {
     rest = rest.join(' ')
     log(JSON.stringify(action))
 
-    if (this.routes[action]) {
+    if (action === '' && this.routes.help) {
+      this.routes.help.call(rest, data)
+    } else if (this.routes[action]) {
       this.routes[action].call(rest, data)
     } else {
       this.rtm.sendMessage(`I don\'t know how to _${action}_`, data.channel, log)
+      if (this.routes.help) { this.routes.help.call(rest, data) }
     }
   }
 }
